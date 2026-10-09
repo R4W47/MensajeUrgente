@@ -1,4 +1,4 @@
-/* Línea Oscura — motor de chat compartido por todas las historias.
+/* Mensaje Urgente — motor de chat compartido por todas las historias.
    Cada historia solo define colores (variables CSS) y su guion con Motor({...}). */
 (function(){
 const CSS=`
