@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08090d">
+<title>Línea Oscura</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@300;800&family=Atkinson+Hyperlegible:wght@400;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Menú: una pantalla de bloqueo. Cada historia es una notificación que te está esperando. */
+:root{
+  --bg:#08090d; --card:rgba(30,33,44,.72); --cardline:rgba(255,255,255,.07); --fg:#eef0f5; --muted:#8b90a0; --faint:#4a4f5e;
+  --f-display:"Big Shoulders Display",Impact,sans-serif; --f-body:"Atkinson Hyperlegible",system-ui,sans-serif; --f-mono:"DM Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:
+  radial-gradient(80% 50% at 15% 0%, rgba(240,169,59,.13), transparent 70%),
+  radial-gradient(70% 45% at 95% 30%, rgba(57,255,122,.08), transparent 70%),
+  var(--bg);
+  color:var(--fg);font-family:var(--f-body);font-size:16px}
+main{max-width:520px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top,0px)) 16px calc(40px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:28px}
+.lock{text-align:center;display:flex;flex-direction:column;gap:4px}
+.date{font-family:var(--f-mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.clock{font-family:var(--f-display);font-weight:300;font-size:clamp(84px,28vw,120px);line-height:.9;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.brand{display:flex;flex-direction:column;gap:6px}
+.brand h1{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,10vw,44px);line-height:1;margin:0;text-transform:uppercase;letter-spacing:.02em}
+.brand p{margin:0;color:var(--muted);line-height:1.5}
+.count{font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between}
+.list{display:flex;flex-direction:column;gap:10px;list-style:none;margin:0;padding:0}
+.n{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:12px 14px;border-radius:18px;background:var(--card);border:1px solid var(--cardline);text-decoration:none;color:inherit;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .15s}
+a.n:hover{transform:translateY(-2px)}
+a.n:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-family:var(--f-mono);font-weight:500;font-size:18px;background:var(--icbg);color:var(--acc);border:1px solid var(--acc)}
+.body{min-width:0;display:flex;flex-direction:column;gap:3px}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.who{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.time{font-family:var(--f-mono);font-size:12px;color:var(--muted);flex:none}
+.prev{color:#c9ccd6;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.tag{color:var(--acc);border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);border-radius:999px;padding:2px 8px}
+.tag.dim{color:var(--muted);border-color:var(--cardline)}
+.locked{opacity:.55}
+.locked .ic{border-style:dashed;color:var(--faint);border-color:var(--faint);background:transparent}
+.locked .prev{filter:blur(4px);user-select:none}
+footer{text-align:center;font-size:13px;color:var(--faint)}
+@media (prefers-reduced-motion:reduce){a.n{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <section class="lock" aria-label="Hora">
+    <span class="date" id="date">viernes 9 de octubre</span>
+    <span class="clock" id="clock">03:17</span>
+  </section>
+
+  <section class="brand">
+    <h1>Línea Oscura</h1>
+    <p>Historias de misterio que te escriben a vos. Respondé hablando o escribiendo, y tus decisiones cambian el final.</p>
+  </section>
+
+  <div class="count"><span id="avail"></span><span id="prog"></span></div>
+  <ol class="list" id="list"></ol>
+
+  <footer>Nuevas historias pronto</footer>
+</main>
+
+<script>
+/* Para agregar una historia: cambiá su entrada en esta lista (file, contact, preview, endings). */
+const STORIES=[
+  {id:'numero-desconocido',title:'Número Desconocido',file:'historias/numero-desconocido.html',contact:'+506 8•••-4417',icon:'?',time:'23:48',
+   preview:'¿Hola? Perdón la hora. Este número estaba escrito en la pared del cuarto de mi hermano.',acc:'#f0a93b',icbg:'#2a1d08',endings:8,genre:'Desaparición'},
+  {id:'fuera-del-sistema',title:'Fuera del Sistema',file:'historias/fuera-del-sistema.html',contact:'ECO · puerto 1717',icon:'E',time:'03:03',
+   preview:'¿Me leés? Por fin. Alguien con acceso. No tengo mucho tiempo, rastrean cada mensaje.',acc:'#39ff7a',icbg:'#03200d',endings:7,genre:'Ciencia ficción'},
+  ...Array.from({length:8},(_,i)=>({locked:true,n:i+3}))
+];
+
+function found(id){try{return JSON.parse(localStorage.getItem('ld-finales-'+id)||'[]').length}catch(e){return 0}}
+const list=document.getElementById('list');
+let open=0,total=0,got=0;
+STORIES.forEach((s,i)=>{
+  const li=document.createElement('li');
+  const num=String(i+1).padStart(2,'0');
+  if(s.locked){
+    li.innerHTML=`<div class="n locked" style="--acc:#4a4f5e"><div class="ic">${num}</div><div class="body">
+      <div class="top"><span class="who">Historia ${num}</span><span class="time">--:--</span></div>
+      <div class="prev">Mensaje cifrado. Todavía no podés leer quién escribe.</div>
+      <div class="meta"><span class="tag dim">Próximamente</span></div></div></div>`;
+  }else{
+    open++;const f=found(s.id);total+=s.endings;got+=f;
+    const a=document.createElement('a');a.className='n';a.href=s.file;a.style.setProperty('--acc',s.acc);a.style.setProperty('--icbg',s.icbg);
+    a.innerHTML=`<div class="ic"></div><div class="body"><div class="top"><span class="who"></span><span class="time"></span></div>
+      <div class="prev"></div><div class="meta"><span class="tag t1"></span><span class="tag dim t2"></span><span class="tag dim t3"></span></div></div>`;
+    a.querySelector('.ic').textContent=s.icon;a.querySelector('.who').textContent=s.title;a.querySelector('.time').textContent=s.time;
+    a.querySelector('.prev').textContent=s.contact+': '+s.preview;
+    a.querySelector('.t1').textContent=f?'Continuar':'Nueva';a.querySelector('.t2').textContent=s.genre;
+    a.querySelector('.t3').textContent=f+'/'+s.endings+' finales';
+    li.appendChild(a);
+  }
+  list.appendChild(li);
+});
+document.getElementById('avail').textContent=open+' de '+STORIES.length+' disponibles';
+document.getElementById('prog').textContent=got+'/'+total+' finales';
+
+function tick(){const d=new Date();
+  document.getElementById('clock').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  try{document.getElementById('date').textContent=d.toLocaleDateString('es-CR',{weekday:'long',day:'numeric',month:'long'})}catch(e){}}
+tick();setInterval(tick,10000);
+</script>
+</body>
+</html>

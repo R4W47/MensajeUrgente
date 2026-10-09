@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#151b29">
+<title>Número Desconocido</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=DM+Mono:wght@400;500&family=Special+Elite&display=swap">
+<style>
+/* Historia 01: una pantalla de celular a las 2 a. m. Ámbar de lámpara sobre azul tinta. */
+:root{
+  --bg:#0e121c; --panel:#151b29; --line:#232b3d; --in:#1c2434; --out:#4a3512; --outfg:#fcebc9;
+  --fg:#e5e8ef; --muted:#8891a6; --accent:#f0a93b; --onaccent:#2a1b04; --alt:#6a2228; --altfg:#ffd9dc;
+  --appbg:radial-gradient(120% 60% at 50% -10%, rgba(240,169,59,.10), transparent 60%), #0e121c;
+  --f-body:"Atkinson Hyperlegible",system-ui,sans-serif; --f-display:"Special Elite","Courier New",monospace; --f-mono:"DM Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+</style>
+</head>
+<body>
+<script src="../motor.js"></script>
+<script>
+const CLUES={
+  reloj:{w:['reloj','hora','3:17','317'],lines:['Está parado en las 3:17. La batería sirve, alguien lo detuvo a propósito.','Atrás tiene un papelito pegado con cinta.','Dice «Muelle 4».']},
+  foto:{w:['foto','imagen','retrato','marco'],lines:['Es Daniel con un señor de sombrero, en un bote.','Alguien rompió la foto justo por la cara del señor.','Atrás, con la letra de Daniel: «R. Mora. No confiar.»']},
+  cuaderno:{w:['cuaderno','libreta','hoja','pagina','papel','arrancad'],lines:['Le pasé un lápiz a la hoja de abajo, como en las películas.','Se marcó algo: «La Garza. 3:17. No faltar.»','La Garza es una lancha de pesca. La he visto en el muelle.']}
+};
+function muelleIntro(S){return [{pause:1800},{sys:'3:12 a. m.'},'Llegué al muelle.','La Garza está amarrada en el muelle 4, con el motor encendido.','Escucho golpes adentro de la bodega del bote.',
+  ...(S.seen?['Y el carro del hombre de sombrero acaba de parquear atrás de mí.']:[]),
+  '¿Qué hago? ¿Me subo, llamo a guardacostas, grabo todo o me voy?']}
+
+Motor({
+  id:'numero-desconocido',
+  title:'Número Desconocido',
+  contact:'+506 8•••-4417', avatar:'?', altName:'Daniel',
+  clock:[23,47], lastSeen:'últ. vez a las 3:17',
+  intro:{kicker:'23:48 · Playas del Coco',text:'Un número que no tenés guardado te escribe a medianoche. Respondé hablando o escribiendo. Lo que digás cambia lo que pasa.',button:'Abrir el chat'},
+  state:{clues:[],seen:false,knows:false},
+  firstStage:'quien',
+  opening:[{pause:700},'¿Hola?','Perdón la hora. ¿Quién es?','Este número estaba escrito con marcador en la pared del cuarto de mi hermano.'],
+  stages:{
+    quien(t,S,has){
+      const intro=has(t,['quien','sos','eres','usted'])?'Me llamo Valeria.':'Ok… yo soy Valeria.';
+      return {lines:[intro,'Mi hermano Daniel desapareció hace tres días.','¿Vos lo conocés?'],next:'conoce'};
+    },
+    conoce(t,S,has){
+      let first;
+      if(/\bno\b/.test(t)) first=['Entonces ¿por qué tu número está en su pared?','Bueno. Ya no sé en quién confiar.'];
+      else if(has(t,['si','claro','conozco','amigo','compa'])){S.knows=true;first=['¿En serio? Entonces sabés más que la policía.','Ellos dicen que «se fue de fiesta».']}
+      else first=['Bueno, da igual.'];
+      return {lines:[...first,'Estoy en su apartamento.','Hay tres cosas raras: un reloj detenido, una foto rota y un cuaderno con una hoja arrancada.','¿Qué reviso primero?'],next:'cuarto'};
+    },
+    cuarto(t,S,has){
+      const key=Object.keys(CLUES).find(k=>has(t,CLUES[k].w));
+      if(!key) return null;
+      if(S.clues.includes(key)) return {lines:['Eso ya lo revisé.','¿Qué más?']};
+      S.clues.push(key);
+      if(S.clues.length<3) return {lines:[...CLUES[key].lines,'¿Y ahora qué reviso?']};
+      return {lines:[...CLUES[key].lines,{pause:900},'Muelle 4. La Garza. Las 3:17.','¿Vos qué pensás que significa todo esto?'],next:'deduce'};
+    },
+    deduce(t,S,has){
+      if(!has(t,['muelle','lancha','garza','bote','barco','puerto','mar','3:17','317','madrugada','mora','playa'])) return null;
+      return {lines:['Eso mismo pensé yo.','Algo iba a pasar en el muelle a las 3:17 de la madrugada.',{pause:1200},'Esperá.','Alguien está abriendo la puerta del apartamento.','¿Qué hago??'],next:'peligro'};
+    },
+    peligro(t,S,has){
+      if(has(t,['escond','closet','armario','ropero','cama','quiet','silencio','calla'])){S.seen=false;
+        return {lines:['Me metí al closet.','Es un hombre. Tiene sombrero.','Está hablando por teléfono…','Dijo: «La lancha sale a las 3:17. El muchacho va adentro.»','Daniel está vivo.','Ya se fue. Voy para el muelle.',...muelleIntro(S)],next:'muelle'}}
+      if(has(t,['enfrent','pregunt','quien es','confront','gritale','habla'])) return {end:'silencio'};
+      if(has(t,['sal','corr','ventana','huy','huir','escapa','vete','andate'])){S.seen=true;
+        return {lines:['Salté por la ventana. Me raspé toda.','Desde la calle veo luz en el cuarto de Daniel.','Un hombre con sombrero está mirando hacia afuera.','Creo que me vio.','Me voy para el muelle.',...muelleIntro(S)],next:'muelle'}}
+      if(has(t,['policia','llama','911','ayuda'])) return {lines:['No tengo saldo y la policía no me cree.','¿Me escondo, salgo por la ventana o le pregunto quién es?']};
+      return null;
+    },
+    muelle(t,S,has){
+      if(has(t,['guardacosta','policia','llam','ayuda','911','avis'])) return {end:S.seen?'vacio':(S.knows?'desconocido':'amanecer')};
+      if(has(t,['grab','video','foto','esper','observ','mira'])) return {end:'evidencia'};
+      if(has(t,['sub','rescat','solt','entra','metete','bodega','abri'])) return {end:S.seen?'trampa':'hermanos'};
+      if(has(t,['vete','andate','volve','casa','deja','olvida','irte','retira','sali de ahi'])) return {end:'abandono'};
+      return null;
+    }
+  },
+  miss:{
+    quien:['¿Hola?'], conoce:['No entiendo… ¿lo conocés o no?'], cuarto:['¿El reloj, la foto o el cuaderno?'],
+    deduce:['Pensá en las tres pistas juntas.','¿Dónde y cuándo?'], peligro:['¡Rápido! ¿Me escondo, me voy o le pregunto quién es?'],
+    muelle:['¡Decime rápido! ¿Me subo, llamo, grabo o me voy?']
+  },
+  chips(S){
+    if(S.stage==='cuarto') return Object.keys(CLUES).filter(k=>!S.clues.includes(k)).map(k=>({reloj:'Revisá el reloj',foto:'Mirá la foto',cuaderno:'El cuaderno'}[k]));
+    if(S.stage==='peligro') return ['¡Escondete!','Salí por la ventana','Preguntale quién es'];
+    if(S.stage==='muelle') return ['Subite a rescatarlo','Llamá a guardacostas','Grabá todo','Andate de ahí'];
+    if(!S.misses) return [];
+    return {quien:['¿Quién sos?'],conoce:['Sí, lo conozco','No lo conozco'],deduce:['Algo pasa en el muelle','Es la lancha La Garza']}[S.stage]||[];
+  },
+  endings:{
+    amanecer:{title:'Al amanecer',lines:['Llamé a guardacostas. Vienen en cinco minutos.','La Garza intentó salir…','¡La rodearon! Hay luces por todo lado.','Sacaron a Daniel de la bodega. Está vivo.',{pause:1500},'Estamos en la ambulancia. Daniel te quiere escribir.',{alt:'Gracias. Me salvaste la vida.'}]},
+    desconocido:{title:'Nadie te conoce',lines:['Llamé a guardacostas. Vienen en cinco minutos.','¡La rodearon! Sacaron a Daniel. Está vivo.',{pause:1500},'Le conté que vos lo conocías. Te quiere escribir.',{alt:'Gracias.'},{alt:'Pero… ¿quién sos vos?'},{alt:'Yo nunca anoté tu número en ninguna pared.'}]},
+    hermanos:{title:'Hermanos',lines:['Me subí. No hay nadie en cubierta.','Abrí la bodega…','¡Es Daniel! Amarrado, pero vivo.','Le corté la cuerda con las llaves.','Nos tiramos al agua y nadamos hasta la playa.',{pause:1500},'Estamos bien. Gracias. De verdad.']},
+    trampa:{title:'La trampa',lines:['Me subí. No hay nadie en cubierta.','Abrí la bodega…','Está vacía.','Escucho pasos arriba.','Es él. Sabía que yo iba a venir.','El motor arrancó.',{pause:2000},{sys:'Valeria dejó de estar en línea'},{alt:'Gracias por mandarla.'},{alt:'Ahora faltás vos.'}]},
+    vacio:{title:'Lancha vacía',lines:['Llamé a guardacostas.','Llegaron rápido, pero La Garza ya se había ido.','El hombre me vio en el apartamento. Les avisó.','En el muelle solo quedó una gorra de Daniel.',{pause:1800},{deleted:true},{sys:'Daniel te escribió desde el número de Valeria'},{alt:'No sigan buscando.'},{alt:'Él lee todo lo que ella escribe.'}]},
+    evidencia:{title:'La evidencia',lines:['Me escondí detrás de unas cajas y estoy grabando.','Sacaron a alguien de la bodega con una bolsa en la cabeza…','Lo subieron a otro bote. La Garza salió sin luces.','Tengo la cara del hombre de sombrero en video.',{pause:1500},'Ya lo mandé a las noticias y a la policía.','No salvé a Daniel esta noche. Pero ya no lo pueden esconder.']},
+    abandono:{title:'Sin respuesta',lines:['Tenés razón. No puedo sola.','Me voy para la casa.',{pause:2000},{sys:'Pasaron tres días'},{alt:'Hola.'},{alt:'Ella fue a buscarme. Vos le dijiste que se fuera.'},{alt:'¿Por qué?'}]},
+    silencio:{title:'Silencio',lines:['Voy a preguntarle quién es.','¿Hola? ¿Quién anda ahí?',{pause:2000},'Es un señor con sombrero. Dice que es amigo de Daniel.','Dice que me va a llevar donde él.','Ok. Voy con él. Te escribo ahora.',{pause:2500},{sys:'Valeria dejó de estar en línea'},{pause:1500},{alt:'Ella ya no va a contestar.'},{alt:'Borrá este número.'}]}
+  }
+});
+</script>
+</body>
+</html>

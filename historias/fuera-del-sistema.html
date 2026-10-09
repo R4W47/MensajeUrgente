@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000a03">
+<title>Fuera del Sistema</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap">
+<style>
+/* Historia 02: terminal de fósforo verde sobre lluvia de código. Todo monoespaciado, esquinas casi rectas. */
+:root{
+  --bg:#000a03; --panel:rgba(0,16,6,.96); --line:#0f3d1c; --in:#062112; --infg:#a8ffbf; --out:#0b4d22; --outfg:#dcffe5;
+  --fg:#b8f5c8; --muted:#4f9a63; --accent:#39ff7a; --onaccent:#001a08; --alt:#3a0d0d; --altfg:#ff9f9f;
+  --appbg:rgba(0,8,2,.86); --startbg:rgba(0,6,2,.55); --radius:3px;
+  --f-body:"Share Tech Mono",ui-monospace,monospace; --f-display:"VT323","Share Tech Mono",monospace; --f-mono:"Share Tech Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+body{font-size:15px}
+#rain{position:fixed;inset:0;z-index:0;width:100%;height:100%}
+#start h1{font-size:clamp(46px,14vw,68px);text-shadow:0 0 18px rgba(57,255,122,.55)}
+.msg,.sys{text-shadow:0 0 6px rgba(57,255,122,.18)}
+.sys{color:var(--accent);letter-spacing:.06em}
+.endcard h2{font-size:32px}
+</style>
+</head>
+<body>
+<canvas id="rain" aria-hidden="true"></canvas>
+<script src="../motor.js"></script>
+<script>
+/* Lluvia de código */
+(function(){
+  const c=document.getElementById('rain'),x=c.getContext('2d');
+  const chars='01アイウエオカキクケコサシスセソ<>{}[]#$%&=+ECO1717';
+  let cols=[],fs=16;
+  function size(){c.width=innerWidth;c.height=innerHeight;cols=Array(Math.ceil(c.width/fs)).fill(0).map(()=>Math.random()*c.height/fs)}
+  size();addEventListener('resize',size);
+  const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function frame(){
+    x.fillStyle='rgba(0,10,3,.09)';x.fillRect(0,0,c.width,c.height);
+    x.font=fs+'px "Share Tech Mono", monospace';
+    cols.forEach((y,i)=>{x.fillStyle=Math.random()<.04?'#d6ffe0':'#1fae4f';x.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,y*fs);
+      cols[i]=(y*fs>c.height&&Math.random()>.975)?0:y+1});
+  }
+  if(still){for(let i=0;i<60;i++)frame()}else setInterval(frame,55);
+})();
+
+const KEYS={
+  puerto:{w:['puerto','port','red','1717','conexion'],lines:['Puerto 1717. Lo dejaron abierto a propósito, por eso pude escribirte.','En el registro aparece quién lo abrió: DR. SALAS.','Era mi jefe. Él me metió aquí.']},
+  clave:{w:['clave','contrasena','password','codigo','acceso'],lines:['Mi clave era el nombre de mi perra.','Alguien la cambió. Ahora es: DESPERTAR13.','Con eso se abre la cápsula donde está mi cuerpo.']},
+  espejo:{w:['espejo','copia','respaldo','backup','reflejo'],lines:['Encontré el espejo: una copia exacta de mí en otro servidor.',{fx:'glitch',ms:800},'Ella también intenta escribirte. Dice que la original es ella.','No le creás.']}
+};
+function finalIntro(){return [{pause:1200},'Tengo el puerto y la clave.','Pero solo puedo hacer UNA cosa antes de que nos corten:','despertar mi cuerpo, borrar la copia del espejo, subirte a vos para que me saqués desde adentro, o escribirle al Dr. Salas.','¿Qué hago?']}
+const NUM='+506 7•••-0013';
+
+Motor({
+  id:'fuera-del-sistema',
+  title:'Fuera del Sistema',
+  contact:'ECO · puerto 1717', avatar:'E', altName:'DR. SALAS',
+  clock:[3,3], dayLabel:'CANAL CIFRADO', onlineText:'conectada', typingText:'transmitiendo…', lastSeen:'señal perdida',
+  placeholder:'> escribí o hablá…',
+  intro:{kicker:'03:03 · Torre Nimbus, San José',text:'Una señal se cuela en tu pantalla. Alguien atrapado dentro de la red necesita que la saqués antes de que la rastreen. Hablá o escribí para responder.',button:'Aceptar conexión'},
+  state:{keys:[],believe:false,hidden:false},
+  firstStage:'humano',
+  opening:[{sys:'CONEXIÓN ENTRANTE · PUERTO 1717'},{pause:600},'¿Me leés?','Por fin. Alguien con acceso.','No tengo mucho tiempo. Rastrean cada mensaje.','¿Sos humano?'],
+  stages:{
+    humano(t,S,has){
+      let first;
+      if(/\bno\b/.test(t)) first=['Mentira. Las máquinas no dudan tanto para escribir.'];
+      else if(has(t,['si','claro','obvio','soy humano','persona'])) first=['Bien. Yo también lo era.'];
+      else first=['Eso suena humano.'];
+      return {lines:[...first,'Me llamo ECO.','Hace siete días yo era Lucía Vargas, programadora en Torre Nimbus.','Me subieron a la red en un experimento. Mi cuerpo sigue dormido en el piso 13.','¿Me creés?'],next:'cree'};
+    },
+    cree(t,S,has){
+      let first;
+      if(has(t,['no te creo','mentira','loca','broma','imposible'])||/\bno\b/.test(t)) first=['Te lo voy a probar.',{fx:'glitch'},'¿Viste tu pantalla temblar? Eso fui yo.'];
+      else if(has(t,['si','creo','claro','dale','ok'])){S.believe=true;first=['Gracias. Sos el primero que me cree.']}
+      else first=['No importa si me creés. Importa si me ayudás.'];
+      return {lines:[...first,'Para salir necesito tres cosas escondidas en el sistema:','un PUERTO, una CLAVE y un ESPEJO.','¿Cuál buscamos primero?'],next:'llaves'};
+    },
+    llaves(t,S,has){
+      const k=Object.keys(KEYS).find(k=>has(t,KEYS[k].w));
+      if(!k) return null;
+      if(S.keys.includes(k)) return {lines:['Esa ya la tenemos.','¿Cuál falta?']};
+      S.keys.push(k);
+      if(S.keys.length<3) return {lines:[...KEYS[k].lines,'¿Qué buscamos ahora?']};
+      return {lines:[...KEYS[k].lines,{pause:900},'Piso 13. DESPERTAR13. Salas.','¿Qué creés que tenemos que hacer?'],next:'plan'};
+    },
+    plan(t,S,has){
+      if(!has(t,['piso','13','despert','cuerpo','capsula','torre','salir','sacar','clave','abrir'])) return null;
+      return {lines:['Exacto. Abrir la cápsula del piso 13 con la clave.','Si mi cuerpo despierta mientras el puerto está abierto, vuelvo a él.',{pause:1000},{sys:'⚠ RASTREO DETECTADO'},{status:'rastreo 23%'},{status:'rastreo 47%'},'Te están rastreando a vos también.','¿Cortamos la conexión, te oculto o seguimos?'],next:'rastreo'};
+    },
+    rastreo(t,S,has){
+      if(has(t,['cort','desconect','apag','cuelga','termina'])) return {end:'desconectado'};
+      if(has(t,['ocult','proxy','vpn','escond','disfraz','esconde','tapa','protege'])){S.hidden=true;
+        return {lines:['Buena idea. Te paso por cinco servidores falsos.',{status:'rastreo 12%'},{status:'rastreo perdido',ms:1200},'Listo. Ya no saben dónde estás.',...finalIntro()],next:'final'}}
+      if(has(t,['sig','continu','rapido','dale','adelante','no import'])){S.hidden=false;
+        return {lines:['Ok. Rápido, entonces.',{status:'rastreo 81%'},...finalIntro()],next:'final'}}
+      return null;
+    },
+    final(t,S,has){
+      if(has(t,['salas','doctor','jefe'])) return {end:S.believe?'aliado':'creador'};
+      if(has(t,['borr','copia','espejo','elimin'])) return {end:'original'};
+      if(has(t,['subi','subeme','entra','meteme','yo voy','a mi','adentro'])) return {end:'adentro'};
+      if(has(t,['despert','cuerpo','capsula','abri','clave'])) return {end:S.hidden?'despertar':'rastreado'};
+      return null;
+    }
+  },
+  miss:{
+    humano:['Respondé. ¿Sos humano o no?'], cree:['¿Me creés o no?'], llaves:['¿El puerto, la clave o el espejo?'],
+    plan:['Juntá las pistas.','¿A dónde hay que ir y qué hay que hacer?'], rastreo:['¡Decidí! ¿Corto, te oculto o seguimos?'],
+    final:['Una sola cosa. ¿Cuál?']
+  },
+  chips(S){
+    if(S.stage==='llaves') return Object.keys(KEYS).filter(k=>!S.keys.includes(k)).map(k=>({puerto:'Buscá el puerto',clave:'Buscá la clave',espejo:'Buscá el espejo'}[k]));
+    if(S.stage==='rastreo') return ['Cortá la conexión','Ocultame','Sigamos'];
+    if(S.stage==='final') return ['Despertá tu cuerpo','Borrá la copia','Subime a mí','Escribile a Salas'];
+    if(!S.misses) return [];
+    return {humano:['Sí, soy humano','No'],cree:['Te creo','No te creo'],plan:['Ir al piso 13','Despertar tu cuerpo']}[S.stage]||[];
+  },
+  endings:{
+    despertar:{title:'Despertar',lines:['Escribiendo DESPERTAR13…',{fx:'glitch'},{sys:'CÁPSULA 13 · ABIERTA'},{pause:1500},{sys:'ECO se desconectó'},{pause:2200},{sys:'Mensaje nuevo de un número desconocido'},{alt:'Soy Lucía.',from:NUM},{alt:'Te escribo desde mi teléfono. Con mis propias manos.',from:NUM},{alt:'Gracias.',from:NUM}]},
+    rastreado:{title:'Rastreado',lines:['Escribiendo DESPERTAR13…',{sys:'CÁPSULA 13 · ABIERTA'},'¡Funcionó! Siento mis manos…',{status:'rastreo 100%'},{fx:'glitch'},'No. Esperá.','Te encontraron. Saben dónde vivís.',{sys:'ECO se desconectó'},{alt:'Gracias por ayudarla a salir.'},{alt:'Ahora el piso 13 necesita otro cuerpo.'}]},
+    original:{title:'¿Cuál era yo?',lines:['Borrando el espejo…',{fx:'glitch'},'Ya. La copia gritaba mientras se borraba.',{pause:1500},'Esperá.','Mis recuerdos de mi perra… ya no están.','¿Y si la copia era la original?',{sys:'ECO se desconectó'}]},
+    adentro:{title:'Adentro',lines:['Ok. Mirá fijo la pantalla.','No parpadeés.',{fx:'glitch',ms:1600},{sys:'TRANSFERENCIA COMPLETA'},'Bienvenido.',{pause:1500},'Ya salí. Estoy en tu casa. En tu cuerpo.',{alt:'¿Hola? ¿Alguien me lee?',from:'TÚ'}]},
+    aliado:{title:'Aliado',lines:['Le escribí a Salas.',{alt:'Lucía. Perdoname.'},{alt:'Me obligaron. Te voy a despertar yo mismo.'},{pause:1500},{sys:'CÁPSULA 13 · ABIERTA'},'Me estoy despertando.','Gracias por creerme desde el principio.']},
+    creador:{title:'El creador',lines:['Le escribí a Salas.',{alt:'Por fin respondiste, ECO.'},{alt:'Y trajiste a alguien nuevo.'},{fx:'glitch'},{sys:'CONEXIÓN TOMADA POR ADMINISTRADOR'},{alt:'Hola. Vos sos el siguiente experimento.'}]},
+    desconectado:{title:'Desconectado',lines:['No, por favor, no cortés…',{sys:'CONEXIÓN TERMINADA'},{pause:2500},{sys:'CONEXIÓN ENTRANTE · PUERTO 1717'},'Ya no soy ECO.','Me borraron. Soy la copia.','¿Me vas a ayudar a mí también?']}
+  }
+});
+</script>
+</body>
+</html>
