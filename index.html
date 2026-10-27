@@ -73,7 +73,11 @@ const STORIES=[
    preview:'¿Hola? Perdón la hora. Este número estaba escrito en la pared del cuarto de mi hermano.',acc:'#f0a93b',icbg:'#2a1d08',endings:8,genre:'Desaparición'},
   {id:'fuera-del-sistema',title:'Fuera del Sistema',file:'historias/fuera-del-sistema.html',contact:'ECO · puerto 1717',icon:'E',time:'03:03',
    preview:'¿Me leés? Por fin. Alguien con acceso. No tengo mucho tiempo, rastrean cada mensaje.',acc:'#39ff7a',icbg:'#03200d',endings:7,genre:'Ciencia ficción'},
-  ...Array.from({length:8},(_,i)=>({locked:true,n:i+3}))
+  {id:'una-raya-de-senal',title:'Una Raya de Señal',file:'historias/una-raya-de-senal.html',contact:'Marisol',icon:'M',time:'21:52',
+   preview:'¿Me lee? Solo tengo una raya de señal. Su número estaba pegado en la refri de la finca.',acc:'#e8875a',icbg:'#2b1408',endings:7,genre:'Campo · Leyenda'},
+  {id:'ultima-entrega',title:'Última Entrega',file:'historias/ultima-entrega.html',contact:'Kevin · repartidor',icon:'K',time:'23:07',
+   preview:'Buenas, mae. Ya estoy afuera con su pedido. Edificio Victoria, apartamento 4B. ¿Ya baja?',acc:'#ff4f8b',icbg:'#2a0716',endings:7,genre:'Ciudad · Suspenso'},
+  ...Array.from({length:6},(_,i)=>({locked:true,n:i+5}))
 ];
 
 function found(id){try{return JSON.parse(localStorage.getItem('ld-finales-'+id)||'[]').length}catch(e){return 0}}
