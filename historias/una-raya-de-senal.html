@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c0f16">
+<title>Una Raya de Señal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rye&family=Atkinson+Hyperlegible:wght@400;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Historia 03: noche en los cerros de Guanacaste. Cielo estrellado, cerro negro, luz de foco color barro. */
+:root{
+  --bg:#0c0f16; --panel:rgba(16,20,30,.94); --line:#252c3b; --in:#1a2030; --out:#5a2c18; --outfg:#ffe2cf;
+  --fg:#ebe7e0; --muted:#8f95a5; --accent:#e8875a; --onaccent:#2b1206; --alt:#3b3116; --altfg:#f3e2b0;
+  --appbg:rgba(10,13,20,.82); --startbg:rgba(8,10,16,.55);
+  --f-body:"Atkinson Hyperlegible",system-ui,sans-serif; --f-display:"Rye",Georgia,serif; --f-mono:"DM Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+body{
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 200' preserveAspectRatio='none'%3E%3Cpath d='M0 200V120l90-30 120 40 150-85 110 55 140-70 160 90 120-40 140 60 170-50V200z' fill='%23070910'/%3E%3C/svg%3E") bottom/100% 32vh no-repeat,
+    radial-gradient(1.4px 1.4px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 27% 8%,#dfe6ff,transparent),
+    radial-gradient(1.2px 1.2px at 44% 22%,#fff,transparent),radial-gradient(1px 1px at 61% 11%,#cfd8ff,transparent),
+    radial-gradient(1.5px 1.5px at 78% 26%,#fff,transparent),radial-gradient(1px 1px at 90% 6%,#fff,transparent),
+    radial-gradient(1px 1px at 6% 40%,#cfd8ff,transparent),radial-gradient(1.2px 1.2px at 35% 44%,#fff,transparent),
+    radial-gradient(1px 1px at 68% 38%,#fff,transparent),radial-gradient(1.3px 1.3px at 95% 48%,#dfe6ff,transparent),
+    radial-gradient(1px 1px at 52% 55%,#fff,transparent),radial-gradient(1px 1px at 18% 60%,#fff,transparent),
+    radial-gradient(90% 60% at 50% 110%, rgba(232,135,90,.16), transparent 70%),
+    linear-gradient(#0a0d18,#121a2a 70%,#0c0f16);
+  background-attachment:fixed;
+}
+.fly{position:fixed;width:4px;height:4px;border-radius:50%;background:#e9f59a;box-shadow:0 0 10px 3px rgba(233,245,154,.55);z-index:0;opacity:0;animation:fly 7s ease-in-out infinite}
+.fly:nth-of-type(1){left:8%;bottom:20%}
+.fly:nth-of-type(2){right:10%;bottom:30%;animation-delay:2.3s}
+.fly:nth-of-type(3){left:20%;bottom:12%;animation-delay:4.1s}
+.fly:nth-of-type(4){right:22%;bottom:16%;animation-delay:5.6s}
+@keyframes fly{0%,100%{opacity:0;transform:translate(0,0)}30%{opacity:1}50%{transform:translate(14px,-22px)}70%{opacity:.8}}
+#start h1{font-size:clamp(38px,11vw,54px);letter-spacing:.01em}
+.endcard h2{font-size:26px}
+.sys{color:#c9a98f}
+</style>
+</head>
+<body>
+<i class="fly" aria-hidden="true"></i><i class="fly" aria-hidden="true"></i><i class="fly" aria-hidden="true"></i><i class="fly" aria-hidden="true"></i>
+<script src="../motor.js"></script>
+<script>
+const CLUES={
+  huellas:{w:['huella','llanta','rastro','barro','pisada','marca','camino'],lines:['En el barro del camino viejo hay marcas de llanta. De camión pequeño, de esos de ganado.','Ese camino nadie lo usa desde que se cayó el puente.','Las huellas bajan del cerro y vuelven a subir.']},
+  cerca:{w:['cerca','alambre','portillo','corte','cortad','poste','cinta'],lines:['El alambre no está reventado. Está cortado limpio, con alicate.','Y en el poste hay una cinta amarilla amarrada.','Don Efraín no usa cintas. Alguien marcó por dónde entrar.']},
+  perro:{w:['perro','chucho','cadejo','animal','ojos'],lines:['Es un perro negro, grandote, sin collar.','No ladra. Solo me sigue a unos metros.','Cuando le alumbro los ojos, brillan rojos. Y se queda viendo fijo hacia el cerro.']}
+};
+function potreroIntro(S){return [{pause:1600},{status:'batería 9%',ms:1200},'Ya están en el potrero de abajo, subiendo novillas al camión.','Cuento cinco. Seis.',
+  ...(S.seen?['Y uno anda con un foco buscándome entre el cañal.']:[]),
+  'El perro está a la par mía, quieto, viendo hacia un trillo que sube al cerro.',
+  '¿Qué hago? ¿Le escribo a la Fuerza Pública, le tomo foto a la placa, espanto el ganado o sigo al perro?']}
+
+Motor({
+  id:'una-raya-de-senal',
+  title:'Una Raya de Señal',
+  contact:'Marisol', avatar:'M', altName:'Don Efraín',
+  clock:[21,52], lastSeen:'sin señal', onlineText:'1 raya de señal', dayLabel:'HOY · FINCA LOS ALMENDROS',
+  intro:{kicker:'21:52 · Cerros de Hojancha',text:'Tu número está pegado en la refri de una finca a la que nunca fuiste. La muchacha que cuida el ganado está sola, con una raya de señal y poca batería. Respondé hablando o escribiendo.',button:'Abrir el chat'},
+  state:{clues:[],seen:false,believes:false},
+  firstStage:'quien',
+  opening:[{pause:700},'¿Me lee?','Perdone la hora. Solo tengo una raya de señal y apenas salen los mensajes.','¿Con quién hablo?'],
+  stages:{
+    quien(t,S,has){
+      const intro=has(t,['quien','usted','vos','sos'])?'Me llamo Marisol.':'Ah, perdón. Soy Marisol.';
+      return {lines:[intro,'Estoy haciendo la práctica de veterinaria en la finca de Don Efraín, aquí en los cerros de Hojancha.','Él se fue al hospital de Nicoya y me dejó sola con el ganado.','En la refri dejó un papelito con su número: «Si pasa algo, escríbale a este».','Y está pasando algo.','Anoche faltaron dos novillas. Los peones dicen que fue el Cadejos, que por eso nadie se queda a dormir aquí.','¿Usted cree en eso?'],next:'cree'};
+    },
+    cree(t,S,has){
+      let first;
+      if(/\bno\b/.test(t)||has(t,['mentira','cuento','leyenda','paja','tonteria'])) first=['Yo tampoco. Por eso le escribo a usted y no a un cura.'];
+      else if(/\bsi\b/.test(t)||has(t,['claro','creo','existe','cierto','real','puede ser','tal vez'])){S.believes=true;first=['Mi abuela también creía.','Yo me reía de ella. Hoy ya no me estoy riendo.']}
+      else first=['Bueno, crea o no, algo está pasando.'];
+      return {lines:[...first,'Fui al corral con el foco.','Encontré tres cosas raras: unas huellas en el camino viejo, la cerca cortada y un perro negro que no es de aquí.','¿Qué reviso primero?'],next:'corral'};
+    },
+    corral(t,S,has){
+      const key=Object.keys(CLUES).find(k=>has(t,CLUES[k].w));
+      if(!key) return null;
+      if(S.clues.includes(key)) return {lines:['Eso ya lo vi.','¿Qué más reviso?']};
+      S.clues.push(key);
+      if(S.clues.length<3) return {lines:[...CLUES[key].lines,'¿Y ahora qué reviso?']};
+      return {lines:[...CLUES[key].lines,{pause:900},'Camino viejo. Cerca marcada. Y el perro viendo el cerro.',{status:'batería 21%',ms:1200},'¿Usted qué cree que está pasando?'],next:'deduce'};
+    },
+    deduce(t,S,has){
+      if(!has(t,['cuatrero','ladron','roba','robo','camion','cerro','camino','gente','alguien','persona','volver','vuelven','regresa','esta noche','hoy','marcaron'])) return null;
+      return {lines:['Eso mismo pienso yo.','No es ningún espanto. Son cuatreros, y van a volver por más.',{pause:1300},'Diay.','Viene bajando una luz por el camino del cerro. Con las luces del carro apagadas, solo una linterna.','El perro se puso a gruñir.','¿Qué hago? ¿Apago todo y me escondo, corro a cerrar el portón o llamo a alguien?'],next:'luz'};
+    },
+    luz(t,S,has){
+      if(has(t,['llam','policia','911','vecino','efrain','ayuda','avis'])) return {lines:['Ya intenté. Las llamadas no salen, solo los mensajes.',{status:'batería 15%'},'¿Me escondo o corro a cerrar el portón?']};
+      if(has(t,['escond','apag','quiet','agach','encerr','silencio','casa'])){S.seen=false;
+        return {lines:['Apagué todo. Estoy en el corredor, agachada detrás de las mecedoras.','Es un camión de ganado. Bajaron dos hombres.','Uno dijo: «Tranquilo, la muchacha está sola. El viejo no vuelve hasta el jueves.»','¿Cómo saben eso?',...potreroIntro(S)],next:'potrero'}}
+      if(has(t,['porton','cerr','candado','cadena','corre','anda','sal'])){S.seen=true;
+        return {lines:['Corrí al portón con la cadena.','Llegué, pero se me cayó el foco y quedó alumbrando para arriba.','Me vieron. Uno gritó: «¡Ahí está!»','Me metí al cañal. Estoy a la par del potrero.',...potreroIntro(S)],next:'potrero'}}
+      return null;
+    },
+    potrero(t,S,has){
+      if(has(t,['policia','fuerza','911','guardia','oij','avis','denunci','escribi','mensaje'])) return {end:S.seen?'apagado':'reten'};
+      if(has(t,['foto','placa','grab','video','zoom'])) return {end:'placa'};
+      if(has(t,['perro','segui','sigue','cadejo','trillo'])) return {end:S.believes?'cadejos':'monte'};
+      if(has(t,['espant','ganado','solt','bulla','grit','vaca','corral','estampida','ruido'])) return {end:'estampida'};
+      if(has(t,['quiet','escond','nada','esper','casa','encerr','cuarto'])) return {end:'quieta'};
+      return null;
+    }
+  },
+  miss:{
+    quien:['¿Me lee?'], cree:['¿Cree o no cree en el Cadejos?'], corral:['¿Las huellas, la cerca o el perro?'],
+    deduce:['Piense en las tres cosas juntas.','¿Quién entra por el camino viejo?'], luz:['¡Rápido! ¿Me escondo o corro al portón?'],
+    potrero:['¡Dígame algo! ¿Fuerza Pública, foto, espantar el ganado o seguir al perro?']
+  },
+  chips(S){
+    if(S.stage==='corral') return Object.keys(CLUES).filter(k=>!S.clues.includes(k)).map(k=>({huellas:'Revisá las huellas',cerca:'Mirá la cerca',perro:'¿Y el perro?'}[k]));
+    if(S.stage==='luz') return ['Apagá todo y escondete','Corré a cerrar el portón','Llamá a alguien'];
+    if(S.stage==='potrero') return ['Escribile a la Fuerza Pública','Tomale foto a la placa','Espantá el ganado','Seguí al perro'];
+    if(!S.misses) return [];
+    return {quien:['¿Quién habla?'],cree:['Sí creo','No creo'],deduce:['Son cuatreros','Van a volver esta noche']}[S.stage]||[];
+  },
+  endings:{
+    reten:{title:'El retén',lines:['Le escribí al 911 con la última raya. Les mandé la ubicación.','Contestaron: «Patrulla en camino. Vamos a cerrar la salida del cerro.»',{pause:1800},'El camión se fue cargado…','…y abajo, en la calle a Hojancha, se ven luces azules.',{pause:1500},{sys:'Pasaron dos horas'},'Los agarraron en el retén con nueve novillas. Todas de Don Efraín.','Gracias por quedarse despierto conmigo.']},
+    apagado:{title:'Sin batería',lines:['Le estoy escribiendo al 911…',{status:'batería 3%',ms:1200},'Ya casi. Les mando la ubicación.','Escucho pasos en el cañal. Y el foco.',{status:'batería 1%',ms:1200},'Creo que se envió. Creo.',{sys:'Marisol dejó de estar en línea'},{pause:2200},{sys:'Mensaje nuevo desde el número de Marisol'},{alt:'Ya le cargamos el teléfono.',from:'Número de Marisol'},{alt:'¿Usted es el que le dijo que nos denunciara?',from:'Número de Marisol'}]},
+    placa:{title:'La placa',lines:['Me arrastré hasta la cerca y le hice zoom al camión.','Ya tengo la foto. Se ve clarita la placa.',{pause:1500},'No.','Yo conozco esa placa.','Es el camión de Wilber. El sobrino de Don Efraín. El que me consiguió esta práctica.','Él sabía que yo iba a estar sola.',{pause:1800},{alt:'Marisol, ¿todo bien por allá? Vi que está en línea a esta hora.',from:'Wilber'}]},
+    estampida:{title:'Estampida',lines:['Abrí el corral de arriba y me puse a darle al tanque de agua con un tubo.','¡Las vacas salieron en estampida para el potrero de abajo!','Los hombres se tiraron a la cuneta.','Uno gritó que eso era cosa del diablo y se montaron al camión.',{pause:1600},'Se fueron vacíos. No se llevaron ni una novilla.','Mañana me toca juntar ganado todo el día. Pero valió la pena.']},
+    cadejos:{title:'El Cadejos',lines:['Seguí al perro por el trillo.','Salimos arriba del camino viejo, justo por donde tiene que pasar el camión.','El perro se paró en medio del camino. Y creció. Le juro que creció.','El camión frenó. El chofer pegó un grito y lo metió en la cuneta.','Salieron corriendo monte abajo. Dejaron las novillas.',{pause:2000},{sys:'Pasaron dos días'},{alt:'Muchacha, ya volví. Gracias por cuidarme la finca.'},{alt:'¿Un perro negro, dice? Ese era el Lucero.'},{alt:'Lo enterré bajo el guanacaste hace once años.'}]},
+    monte:{title:'Monte adentro',lines:['Seguí al perro por el trillo.','Va rápido. Casi no lo veo.','Ya no escucho el camión. Ni las vacas. Ni nada.','El perro se detuvo frente a una cruz de madera.',{status:'batería 2%',ms:1200},'Ya no está. ¿Dónde se metió?','¿Dónde estoy yo?',{sys:'Marisol dejó de estar en línea'},{pause:2400},{alt:'Buenas. Soy Efraín. Me dicen que la muchacha no aparece desde anoche.'},{alt:'Encontraron su teléfono al pie de la cruz del cerro.'},{alt:'Y yo nunca dejé ningún número en la refri.'}]},
+    quieta:{title:'Quieta',lines:['Tiene razón. No me voy a mover de aquí.','Me encerré en el cuarto. El perro se metió conmigo.',{pause:2000},{sys:'5:40 a. m.'},'Ya amaneció. Se llevaron catorce novillas.','Pero el perro no se separó de la puerta en toda la noche.','Y ahora que salió el sol… ya no está.','La puerta sigue con llave.']}
+  }
+});
+</script>
+</body>
+</html>

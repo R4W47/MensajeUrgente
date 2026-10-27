@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d0d12">
+<title>Última Entrega</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Historia 04: chat de una app de delivery, de noche en San José. Asfalto mojado, lluvia y neón rosado. */
+:root{
+  --bg:#0d0d12; --panel:rgba(20,20,28,.95); --line:#2a2a38; --in:#1e1e2a; --out:#3d1429; --outfg:#ffd8e8;
+  --fg:#ecebf2; --muted:#8e8ca3; --accent:#ff4f8b; --onaccent:#2a0614; --alt:#0f3442; --altfg:#c4f4ff;
+  --appbg:rgba(12,12,17,.86); --startbg:rgba(10,10,14,.5); --radius:18px;
+  --f-body:"Manrope",system-ui,sans-serif; --f-display:"Anton",Impact,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+body{background:
+  radial-gradient(60% 40% at 10% 100%, rgba(255,79,139,.20), transparent 70%),
+  radial-gradient(50% 35% at 95% 85%, rgba(64,200,255,.14), transparent 70%),
+  linear-gradient(#0a0a10,#121019 60%,#0d0d12)}
+#rain{position:fixed;inset:0;z-index:0;width:100%;height:100%}
+#start h1{font-size:clamp(46px,14vw,72px);text-transform:uppercase;letter-spacing:.01em;text-shadow:0 0 22px rgba(255,79,139,.45)}
+#start .kicker{color:var(--accent)}
+.endcard h2{font-size:30px;text-transform:uppercase;letter-spacing:.02em}
+.sys{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.who b{font-weight:700}
+</style>
+</head>
+<body>
+<canvas id="rain" aria-hidden="true"></canvas>
+<script src="../motor.js"></script>
+<script>
+/* Lluvia sobre la ciudad */
+(function(){
+  const c=document.getElementById('rain'),x=c.getContext('2d');let drops=[];
+  function size(){c.width=innerWidth;c.height=innerHeight;
+    drops=Array.from({length:Math.round(innerWidth/9)},()=>({x:Math.random()*c.width,y:Math.random()*c.height,l:8+Math.random()*16,v:7+Math.random()*7,a:.08+Math.random()*.22}))}
+  size();addEventListener('resize',size);
+  const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function frame(){x.clearRect(0,0,c.width,c.height);x.lineWidth=1;
+    for(const d of drops){x.strokeStyle='rgba(190,200,255,'+d.a+')';x.beginPath();x.moveTo(d.x,d.y);x.lineTo(d.x-d.l*.25,d.y+d.l);x.stroke();
+      if(!still){d.y+=d.v;d.x-=d.v*.25;if(d.y>c.height){d.y=-20;d.x=Math.random()*(c.width+80)}}}
+    if(!still)requestAnimationFrame(frame)}
+  frame();
+})();
+
+const CLUES={
+  bolsa:{w:['pedido','bolsa','pidieron','pidio','comida','lista','orden','recibo','factura','que pid'],lines:['No es comida. Es de la farmacia de la esquina.','Una botella de agua, gasas, un cargador de iPhone y un jugo de cajita.','En las instrucciones alguien escribió algo y lo borró. La app guardó un pedacito: «ayud».']},
+  ventana:{w:['ventana','luz','cuarto piso','4b','balcon','arriba','cortina'],lines:['La ventana del 4B tiene la cortina cerrada.','Pero cada tanto se ve una lucecita que prende y apaga.','Tres cortas, tres largas, tres cortas. Eso es SOS, ¿verdad?']},
+  guarda:{w:['guarda','guardia','seguridad','vigilante','portero','senor','oficial'],lines:['Le pregunté por el 4B. Dice que está vacío desde hace un año.','Pero en el parqueo hay una camioneta negra de vidrios polarizados que no anotó en la bitácora.','Y ahorita le escribió a alguien sin quitarme los ojos de encima.']}
+};
+function puertaIntro(S){return [{pause:1500},{sys:'Cuarto piso'},'Estoy frente al 4B.','La puerta tiene candado. Por fuera, mae. Por fuera.','Alguien me escuchó. Una voz de muchacha, bajito: «¿Kevin? ¿Sos el del pedido?»',
+  ...(S.seen?['Y el ascensor viene subiendo.']:[]),
+  '¿Qué hago? ¿Llamo al 911, rompo el candado, transmito en vivo o le paso el cargador por debajo de la puerta?']}
+
+Motor({
+  id:'ultima-entrega',
+  title:'Última Entrega',
+  contact:'Kevin · repartidor', avatar:'K', altName:'Ana',
+  clock:[23,7], lastSeen:'pedido cerrado', onlineText:'en ruta', dayLabel:'PEDIDO #4B-2307',
+  intro:{kicker:'23:07 · Barrio Amón, San José',text:'Un repartidor te escribe por la app: llegó con tu pedido a un edificio donde no vivís. Vos no pediste nada. Respondé hablando o escribiendo.',button:'Abrir el chat'},
+  state:{clues:[],seen:false},
+  firstStage:'pedido',
+  opening:[{pause:600},{sys:'Kevin aceptó tu pedido'},{pause:900},'Buenas, mae. Ya estoy afuera con su pedido.','Edificio Victoria, apartamento 4B. ¿Ya baja?'],
+  stages:{
+    pedido(t,S,has){
+      let first;
+      if(/\bno\b/.test(t)||has(t,['equivoc','error','cancel','yo no','nada'])) first=['¿Cómo que no? Está pagado con su cuenta. Hace veinte minutos.'];
+      else if(/\bsi\b/.test(t)||has(t,['claro','ya bajo','voy','mio','yo vivo'])) first=['Ok… pero el guarda dice que el 4B está vacío desde hace un año.','¿Seguro que es aquí?'];
+      else first=['Ok…'];
+      return {lines:[...first,'Mire, esto está raro. La nota del pedido dice:','«No toque el timbre. Deje la bolsa en el buzón y mire hacia la ventana del cuarto piso.»','Y hay tres cosas que no me cuadran: lo que pidieron, la ventana del 4B y el guarda, que no me quita los ojos de encima.','¿Qué reviso?'],next:'pistas'};
+    },
+    pistas(t,S,has){
+      const key=Object.keys(CLUES).find(k=>has(t,CLUES[k].w));
+      if(!key) return null;
+      if(S.clues.includes(key)) return {lines:['Eso ya lo vi.','¿Qué más?']};
+      S.clues.push(key);
+      if(S.clues.length<3) return {lines:[...CLUES[key].lines,'¿Y ahora qué reviso?']};
+      return {lines:[...CLUES[key].lines,{pause:900},'Agua, gasas y un cargador. Una lucecita pidiendo auxilio. Y un guarda que miente.','¿Usted qué cree que está pasando ahí arriba?'],next:'deduce'};
+    },
+    deduce(t,S,has){
+      if(!has(t,['secuestr','encerrad','atrapad','retenid','alguien','persona','ayuda','auxilio','herid','sos','encerr','muchacha','mujer','victima'])) return null;
+      return {lines:['Eso mismo creo yo. Hay alguien encerrado en el 4B.','Y usó su cuenta para pedir ayuda. Quién sabe cómo.',{pause:1300},'Uy.','La camioneta negra acaba de prender las luces.','El guarda me dice que ya me vaya, que él recibe la bolsa.','¿Qué hago? ¿Le doy la bolsa, me hago el tonto y me meto por el parqueo, o me voy?'],next:'guarda'};
+    },
+    guarda(t,S,has){
+      if(has(t,['911','policia','llam','avis'])) return {lines:['Llamé. Me dicen que no pueden entrar a un apartamento por una lucecita y una corazonada.','Ocupan algo más.','¿Le doy la bolsa al guarda, me meto por el parqueo o me voy?']};
+      if(has(t,['entreg','dale','da la bolsa','dejala','recib','dasela','bolsa'])){S.seen=false;
+        return {lines:['Le di la bolsa. Pero antes me guardé el cargador en la jacket.','Él la tiró al basurero apenas me di vuelta.','Arranqué la moto y di la vuelta a la cuadra.','Me metí a pie por el portón del parqueo justo antes de que cerrara. Nadie me vio.',...puertaIntro(S)],next:'puerta'}}
+      if(has(t,['vete','andate','irte','anda','cancel','olvid','no te metas'])) return {end:'cancelado'};
+      if(has(t,['tont','parqueo','mete','escaler','entr','sub','porton'])){S.seen=true;
+        return {lines:['Le dije que tengo que entregar en mano, que es política de la app.','Mientras alegábamos, un vecino abrió el portón del parqueo y me metí corriendo.','El guarda me gritó. Ya sabe que estoy adentro.','Subí por las escaleras.',...puertaIntro(S)],next:'puerta'}}
+      return null;
+    },
+    puerta(t,S,has){
+      if(has(t,['911','policia','llam','avis','patrulla'])) return {end:S.seen?'vacio':'rescate'};
+      if(has(t,['vivo','transmit','grab','live','video','redes','stream'])) return {end:'envivo'};
+      if(has(t,['cargador','debajo','rendija','pasale','bateria','telefono'])) return {end:'rendija'};
+      if(has(t,['romp','candado','abri','forz','patea','extintor','entra'])) return {end:S.seen?'entregado':'escaleras'};
+      if(has(t,['vete','andate','irte','baja','huy','corr'])) return {end:'cancelado'};
+      return null;
+    }
+  },
+  miss:{
+    pedido:['¿Usted pidió esto o no?'], pistas:['¿El pedido, la ventana o el guarda?'],
+    deduce:['Piense en las tres cosas juntas.','¿Qué hay en el 4B?'], guarda:['¡Rápido! ¿Le doy la bolsa, me meto o me voy?'],
+    puerta:['¡Dígame algo! ¿911, rompo el candado, transmito o le paso el cargador?']
+  },
+  chips(S){
+    if(S.stage==='pistas') return Object.keys(CLUES).filter(k=>!S.clues.includes(k)).map(k=>({bolsa:'¿Qué pidieron?',ventana:'Mirá la ventana',guarda:'Preguntale al guarda'}[k]));
+    if(S.stage==='guarda') return ['Dale la bolsa','Metete por el parqueo','Andate de ahí'];
+    if(S.stage==='puerta') return ['Llamá al 911','Rompé el candado','Transmití en vivo','Pasale el cargador'];
+    if(!S.misses) return [];
+    return {pedido:['Yo no pedí nada','Sí, es mío'],deduce:['Alguien está secuestrado','Están pidiendo ayuda']}[S.stage]||[];
+  },
+  endings:{
+    rescate:{title:'Entrega completa',lines:['Llamé al 911. Ahora sí: candado por fuera y una muchacha adentro.','Me quedé hablándole por la puerta. Se llama Ana.',{pause:1800},'Llegaron dos patrullas. El guarda intentó irse en la camioneta. No pudo.','Rompieron el candado. Ana está bien. Asustada, pero bien.',{pause:1500},{sys:'Mensaje nuevo desde tu propia cuenta'},{alt:'Perdón por usar tu cuenta. Era la única contraseña que me sabía de memoria.'},{alt:'Vos me la diste hace mucho. ¿No te acordás de mí?'}]},
+    vacio:{title:'Olía a cloro',lines:['Llamé al 911.','Mientras esperaba, el ascensor llegó al piso. Salieron dos tipos.','Me tiraron por las escaleras. Corrí hasta la calle.',{pause:1800},'La policía subió conmigo veinte minutos después.','El 4B estaba abierto. Vacío. Recién limpiado. Olía a cloro.','Ni candado había.',{pause:1500},{sys:'Tu pedido fue cancelado por el cliente'}]},
+    envivo:{title:'En vivo',lines:['Ya estoy transmitiendo. Hay 40 personas viendo.','Doscientas. Mil.','Le pregunté por la puerta cómo se llama. «Ana», dijo, y su apellido.','Alguien en los comentarios la reconoció. La mamá la anda buscando desde hace cuatro días.',{pause:1800},'Los vecinos salieron de los apartamentos. Uno trajo una barra y reventó el candado.','Ana está afuera. Los del edificio no dejan que nadie se la lleve.','La policía viene subiendo. El guarda ya no está.']},
+    escaleras:{title:'Escaleras abajo',lines:['Le di al candado con el extintor del pasillo. Una, dos, tres veces.','Cedió.','Ana estaba en el piso, con un tobillo morado. Me abrazó sin decir nada.','Bajamos por la escalera de emergencia y salimos por el parqueo.',{pause:1500},'Ya vamos en la moto por la Avenida 7.','Directo a la delegación. Gracias por no dejarme cancelar el pedido.']},
+    entregado:{title:'Pedido entregado',lines:['Le estoy dando al candado con el extintor…','Ya casi.','Se abrió el ascensor.',{pause:1500},'No es la policía.',{pause:2000},{sys:'Kevin dejó de estar en línea'},{pause:1500},{sys:'Tu pedido fue marcado como entregado ✓'},{alt:'Gracias por su pedido.',from:'Kevin'},{alt:'¿Desea pedir algo más esta noche?',from:'Kevin'}]},
+    rendija:{title:'Batería',lines:['Le pasé el cargador por debajo de la puerta.','Del otro lado la escucho conectarlo.',{pause:2200},'Me escribió desde su teléfono, por la app. Se llama Ana.','Ya llamó a su hermano. Es policía.',{pause:1600},'Están abajo. Tres patrullas.','Ana me dice que me vaya antes de que suban, que el guarda no es el único que trabaja para ellos.','Me voy. Pero ella ya está a salvo.']},
+    cancelado:{title:'Pedido cancelado',lines:['Tiene razón. No es problema mío.','Cancelé el pedido y me fui.',{pause:2200},{sys:'Al día siguiente · 23:07'},{sys:'Kevin aceptó tu pedido'},'Buenas, mae. Otra vez yo.','Otra vez un pedido desde su cuenta.','Pero ahora la dirección no es el Edificio Victoria.','Es su casa.']}
+  }
+});
+</script>
+</body>
+</html>
