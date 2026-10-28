@@ -7,7 +7,7 @@
 <title>Camino Real</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Atkinson+Hyperlegible:wght@400;700&family=DM+Mono:wght@400;500&display=swap">
 <style>
-/* Historia 05: el camino real de madrugada. Luna llena, neblina que se arrastra y violeta de bruja. */
+/* Historia 05: el camino de las minas viejas, de Las Juntas de Abangares a La Sierra, de madrugada. Luna llena, neblina que se arrastra y violeta de bruja. */
 :root{
   --bg:#0b0a12; --panel:rgba(18,15,28,.94); --line:#2b2540; --in:#1c1830; --out:#3a2a5c; --outfg:#ece2ff;
   --fg:#e9e5f0; --muted:#958fa8; --accent:#b48cff; --onaccent:#1a0f2e; --alt:#3d2219; --altfg:#ffdccc;
@@ -38,23 +38,23 @@ body{background:
 <div class="fog" aria-hidden="true"></div><div class="fog b" aria-hidden="true"></div>
 <script src="../motor.js"></script>
 <script>
-function lloronaIntro(){return [{pause:1600},{sys:'1:48 a. m.'},'Ya llegué al puente de hamaca del río.','Hace un frío raro. Y se oye una mujer llorando.','«¡Ay, mis hijos!»',{fx:'llanto'},'El llanto se oye lejísimos, río arriba.','Eso es bueno, ¿verdad? Si se oye lejos, está lejos.','¿Cruzo rápido?']}
-function cadejosIntro(){return [{pause:1600},{sys:'2:05 a. m.'},'Ya voy por la última recta. Se ve la luz de la casa de mi abuela.','Pero escucho cadenas detrás de mí.','Me volví a ver.',{fx:'susto'},'Es un perro negro del tamaño de un ternero. Ojos rojos. Arrastra una cadena.','El Cadejos.','Mae, me tomé unos guaros en el turno. Dicen que persigue a los borrachos.','¿Corro a la casa? Son como doscientos metros.']}
+function lloronaIntro(){return [{pause:1600},{sys:'1:48 a. m.'},'Ya llegué al puente de hamaca del río Abangares.','Hace un frío raro. Y se oye una mujer llorando.','«¡Ay, mis hijos!»',{fx:'llanto'},'El llanto se oye lejísimos, río arriba, por donde están los túneles de los oreros.','Eso es bueno, ¿verdad? Si se oye lejos, está lejos.','¿Cruzo rápido?']}
+function cadejosIntro(){return [{pause:1600},{sys:'2:05 a. m.'},'Ya voy subiendo la última cuesta antes de La Sierra. Se ve la luz de la casa de mi abuela.','Pero escucho cadenas detrás de mí.','Me volví a ver.',{fx:'susto'},'Es un perro negro del tamaño de un ternero. Ojos rojos. Arrastra una cadena.','El Cadejos.','Mae, me tomé unos guaros en el turno. Dicen que persigue a los borrachos.','¿Corro a la casa? Son como doscientos metros.']}
 
 Motor({
   id:'camino-real',
   title:'Camino Real',
   contact:'Javier', avatar:'J', altName:'Abuela',
   clock:[1,13], lastSeen:'últ. vez a la 1:13', dayLabel:'MADRUGADA',
-  intro:{kicker:'01:13 · Camino real, Guanacaste',text:'Tu amigo Javier perdió el último bus del turno y le toca caminar seis kilómetros de noche. Dicen que en ese camino salen la Mona, la Llorona y el Cadejos. Lo que le digás puede salvarlo, si te sabés las leyendas.',button:'Abrir el chat'},
+  intro:{kicker:'01:13 · Las Juntas de Abangares',text:'Tu amigo Javier perdió el último bus del turno de Las Juntas y le toca subir a pie hasta La Sierra, por el camino de las minas viejas. Dicen que en ese camino salen la Mona, la Llorona y el Cadejos. Lo que le digás puede salvarlo, si te sabés las leyendas.',button:'Abrir el chat'},
   state:{r:0},
   firstStage:'acompana',
-  opening:[{pause:700},'Mae, ¿está despierto?','Perdón la hora. Se me fue el último bus del turno.','Me toca caminar seis kilómetros por el camino real hasta donde mi abuela.','¿Me acompaña por chat? Ese camino me da miedo.'],
+  opening:[{pause:700},'Mae, ¿está despierto?','Perdón la hora. Se me fue el último bus del turno de Las Juntas.','Me toca subir a pie hasta La Sierra, donde mi abuela, por el camino viejo de las minas.','¿Me acompaña por chat? Ese camino me da miedo.'],
   stages:{
     acompana(t,S,has){
       const first=/\bno\b/.test(t)?['Diay, qué mala onda.','Bueno, igual le voy a escribir.']:['Pura vida. Gracias, mae.'];
-      return {lines:[...first,'Mi abuela dice que en este camino salen tres espantos: la Mona, la Llorona y el Cadejos.','Y que con cada uno hay que hacer algo distinto. Yo no me acuerdo de nada.','Si sale algo, usted me dice qué hago.',
-        {pause:1600},{sys:'1:31 a. m.'},'Voy pasando por el palo de guanacaste grande, el de la curva.','Algo se movió arriba, en las ramas.',{fx:'susto'},'¡Mae! Es un mono. Un mono enorme.','Se está riendo. Como una señora.','Es la Mona, ¿verdad? ¿Qué hago?'],next:'mona'};
+      return {lines:[...first,'Mi abuela dice que desde los tiempos de los oreros en este camino salen tres espantos: la Mona, la Llorona y el Cadejos.','Y que con cada uno hay que hacer algo distinto. Yo no me acuerdo de nada.','Si sale algo, usted me dice qué hago.',
+        {pause:1600},{sys:'1:31 a. m.'},'Voy pasando por el palo de guanacaste grande, a la par de la entrada de una mina vieja.','Algo se movió arriba, en las ramas.',{fx:'susto'},'¡Mae! Es un mono. Un mono enorme.','Se está riendo. Como una señora.','Es la Mona, ¿verdad? ¿Qué hago?'],next:'mona'};
     },
     mona(t,S,has){
       if(has(t,['dios','santa maria','rez','oracion','orale','padre nuestro','cruz','persign','rosario'])){S.r++;
@@ -89,12 +89,12 @@ Motor({
     return {acompana:['Sí, te acompaño','Mejor no']}[S.stage]||[];
   },
   endings:{
-    mona:{title:'La Mona',lines:['Me devolví corriendo por el camino.','La escucho brincando de palo en palo detrás de mí.','Se ríe más fuerte.',{fx:'susto'},'Se me tiró encima. Me jala el pelo y me grita mi nombre.','Mae, sabe mi nombre.',{sys:'Javier dejó de estar en línea'},{pause:2200},{sys:'La abuela de Javier te escribió'},{alt:'¿Usted andaba con Javier anoche?'},{alt:'Dicen que lo vieron arriba del palo de guanacaste. Riéndose.'}]},
+    mona:{title:'La Mona',lines:['Me devolví corriendo por el camino.','La escucho brincando de palo en palo detrás de mí.','Se ríe más fuerte.',{fx:'susto'},'Se me tiró encima. Me jala el pelo y me grita mi nombre.','Mae, sabe mi nombre.',{sys:'Javier dejó de estar en línea'},{pause:2200},{sys:'La abuela de Javier te escribió'},{alt:'¿Usted andaba con Javier anoche?'},{alt:'Dicen que lo vieron arriba del palo de guanacaste de la mina vieja. Riéndose.'}]},
     video:{title:'El video',lines:['Saqué el teléfono y la estoy grabando con el flash.','La Mona se quedó quieta. Como posando.','Ya. Se fue brincando para el cañal.',{pause:1500},'Estoy viendo el video.','En el video no sale ningún mono.','Sale una señora en enagua, sentada en la rama. Viéndome.',{pause:1200},'Es Doña Chayo. La que vendía tamales en el turno.',{sys:'Pasaron dos días'},{alt:'Buenas, joven. Dice la gente que usted anda enseñando un video mío.',from:'Doña Chayo'},{alt:'Bórrelo. Por su bien.',from:'Doña Chayo'}]},
     llorona:{title:'La Llorona',lines:['Le grité: «¡Señora! ¿Está bien?»','El llanto se cortó en seco.',{pause:1500},'Ahora está aquí. A mi lado. No la oí llegar.','Me agarró la mano. Está helada y mojada.','Me dice: «¿Usted ha visto a mis hijos?»','Me está jalando hacia el río.',{fx:'llanto',ms:1600},{sys:'Javier dejó de estar en línea'},{pause:2000},{sys:'Javier te mandó un audio'},{sys:'En el audio solo se oye el río. Y una mujer llorando.'}]},
-    puente:{title:'El puente',lines:['Ok, cruzo rápido.','Voy por la mitad del puente.','El llanto se dejó de oír.',{pause:1500},'Mae.','Ella está al otro lado. Esperándome.','Si se oye lejos, es porque está cerca. Eso decía mi abuela. Ahora me acuerdo.',{fx:'susto'},'Viene caminando hacia mí. El puente se mueve.',{sys:'Javier dejó de estar en línea'},{pause:2000},{sys:'La abuela de Javier te escribió'},{alt:'En la orilla del río encontraron una tenis de Javier.'},{alt:'¿Usted fue el último que habló con él?'}]},
+    puente:{title:'El puente',lines:['Ok, cruzo rápido.','Voy por la mitad del puente.','El llanto se dejó de oír.',{pause:1500},'Mae.','Ella está al otro lado. Esperándome.','Si se oye lejos, es porque está cerca. Eso decía mi abuela. Ahora me acuerdo.',{fx:'susto'},'Viene caminando hacia mí. El puente se mueve.',{sys:'Javier dejó de estar en línea'},{pause:2000},{sys:'La abuela de Javier te escribió'},{alt:'En la orilla del río Abangares encontraron una tenis de Javier.'},{alt:'¿Usted fue el último que habló con él?'}]},
     cadenas:{title:'Cadenas',lines:['Salí corriendo.','Mala idea. El Cadejos corre más.','Lo siento resoplando en la nuca. La cadena suena a la par mía.',{fx:'susto'},'Me caí. Lo tengo de frente.','Tiene los ojos como brasas.',{pause:1800},{sys:'5:20 a. m.'},'Desperté en la cuneta, a la par de la cerca de mi abuela.','Estoy entero. Pero no me acuerdo de nada.','Y tengo marcas de cadena en los tobillos.']},
-    abuela:{title:'El guardián',lines:['Ok. Camino despacio. Sin voltear.','El Cadejos camina a la par mía. No me hace nada.','Ya veo a mi abuela en el corredor, con el rosario.',{pause:1500},'Llegué. El perro se quedó en el portón y después se fue.',{sys:'La abuela de Javier te escribió'},{alt:'Gracias a Dios, mijo. Ese perro lo cuidó todo el camino.'},{alt:'Desde que murió su abuelo, siempre acompaña a los de la familia que vienen tarde.'},'Mae. Gracias por no dejarme solo.']},
+    abuela:{title:'El guardián',lines:['Ok. Camino despacio. Sin voltear.','El Cadejos camina a la par mía. No me hace nada.','Ya veo a mi abuela en el corredor, con el rosario.',{pause:1500},'Llegué. El perro se quedó en el portón y después se fue.',{sys:'La abuela de Javier te escribió'},{alt:'Gracias a Dios, mijo. Ese perro lo cuidó todo el camino.'},{alt:'Desde que su abuelo murió en la mina, siempre acompaña a los de la familia que vienen tarde.'},'Mae. Gracias por no dejarme solo.']},
     casa:{title:'¿Quién llegó?',lines:['Ok. Camino despacio. Sin voltear.','Las cadenas se dejaron de oír.','Llegué. La puerta estaba abierta. Mi abuela me sirvió café y no dijo nada.','Ya estoy acostado. Qué noche, mae.',{pause:2400},{sys:'La abuela de Javier te escribió'},{alt:'¿Usted sabe dónde viene Javier?'},{alt:'Lo estoy esperando en el corredor desde las doce.'},{alt:'Aquí no ha llegado nadie.'}]}
   }
 });
