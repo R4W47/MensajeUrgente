@@ -77,7 +77,9 @@ const STORIES=[
    preview:'¿Me lee? Solo tengo una raya de señal. Su número estaba pegado en la refri de la finca.',acc:'#e8875a',icbg:'#2b1408',endings:7,genre:'Campo · Leyenda'},
   {id:'ultima-entrega',title:'Última Entrega',file:'historias/ultima-entrega.html',contact:'Kevin · repartidor',icon:'K',time:'23:07',
    preview:'Buenas, mae. Ya estoy afuera con su pedido. Edificio Victoria, apartamento 4B. ¿Ya baja?',acc:'#ff4f8b',icbg:'#2a0716',endings:7,genre:'Ciudad · Suspenso'},
-  ...Array.from({length:6},(_,i)=>({locked:true,n:i+5}))
+  {id:'camino-real',title:'Camino Real',file:'historias/camino-real.html',contact:'Javier',icon:'J',time:'01:13',
+   preview:'Mae, ¿está despierto? Se me fue el último bus y me toca irme a pie por el camino real.',acc:'#b48cff',icbg:'#1d1230',endings:7,genre:'Leyendas'},
+  ...Array.from({length:5},(_,i)=>({locked:true,n:i+6}))
 ];
 
 function found(id){try{return JSON.parse(localStorage.getItem('ld-finales-'+id)||'[]').length}catch(e){return 0}}
